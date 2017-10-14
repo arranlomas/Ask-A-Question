@@ -11,6 +11,8 @@
 
     <!--main-->
     <string name="send_question_success">Question Sent</string>
+    <string name="upvote_question_success">Question Upvoted</string>
+    <string name="downvote_question_success">Question Downvoted</string>
 
 </resources>
 

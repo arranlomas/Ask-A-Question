@@ -30,8 +30,7 @@ class MainActivity : BaseActivity(), MainContract.View {
 
         fab.setOnClickListener { showAddQuestionDialog() }
 
-        adapter = QuestionsAdapter({ question, action ->
-        })
+        adapter = QuestionsAdapter({ question, action -> presenter.onListItemAction(question, action) })
 
         mainRecyclerView.setHasFixedSize(true)
         val mLayoutManager = GridLayoutManager(this, 1, OrientationHelper.VERTICAL, false)

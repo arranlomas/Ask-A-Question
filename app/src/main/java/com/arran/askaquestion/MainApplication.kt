@@ -15,12 +15,13 @@ class MainApplication : MultiDexApplication() {
         AskAQuestion.install()
         auth = FirebaseAuth.getInstance()
         val currentUser = auth.currentUser
-        if (currentUser == null)
-            auth.signInAnonymously().addOnCompleteListener {
-                if (it.isSuccessful) Log.v("Sign in", "SUCCESS")
-                else Log.v("Sign in", "ERROR: ${it.exception}")
-            }
-
+        currentUser?.let { AskAQuestion.currentUser } ?:
+                auth.signInAnonymously().addOnCompleteListener {
+                    if (it.isSuccessful) {
+                        auth.currentUser?.let { AskAQuestion.currentUser }
+                        Log.v("Sign in", "SUCCESS")
+                    } else Log.v("Sign in", "ERROR: ${it.exception}")
+                }
         super.onCreate()
     }
 

@@ -11,4 +11,6 @@ interface IFirebaseApi {
     val questionUpdateObservable: PublishSubject<List<Question>>
     fun postQuestion(question: String): Observable<String>
     fun listenToAllQuestionUbdates()
+    fun voteUpQuestion(firebaseKey: String): Observable<FirebaseApi.VoteResult>
+    fun voteDownQuestion(firebaseKey: String): Observable<FirebaseApi.VoteResult>
 }

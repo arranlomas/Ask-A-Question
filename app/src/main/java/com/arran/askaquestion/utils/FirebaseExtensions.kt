@@ -1,10 +1,8 @@
 package com.arran.askaquestion.utils
 
 import android.util.Log
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.ValueEventListener
+import com.arran.askaquestion.models.FirebaseObject
+import com.google.firebase.database.*
 import rx.Emitter
 import rx.Observable
 import rx.schedulers.Schedulers
@@ -45,10 +43,37 @@ fun <T> getEventListenerList(onError: (Exception) -> Unit, onDataChange: (List<T
         override fun onDataChange(dataSnapshot: DataSnapshot) {
             val listOfItems = mutableListOf<T>()
             dataSnapshot.children.forEach {
+                val firebaseKey = it.key
                 val obj: T? = it.getValue(clazz)
-                obj?.let { listOfItems.add(obj) }
+                obj?.let {
+                    (it as FirebaseObject).firebaseKey = firebaseKey
+                    listOfItems.add(obj)
+                }
             }
             onDataChange.invoke(listOfItems)
         }
     }
+}
+
+fun <T, R> DatabaseReference.createTransactionObservable(clazz: Class<T>, action: (T) -> Unit, success: R, error: R): Observable<R> {
+    return Observable.create<R>({ subscriber ->
+        this.transactAsync(clazz, action, { subscriber.onNext(error) }, { subscriber.onNext(success) })
+    }, Emitter.BackpressureMode.BUFFER)
+            .observeOn(Schedulers.computation())
+}
+
+fun <T> DatabaseReference.transactAsync(clazz: Class<T>, action: (T) -> Unit, onError: () -> Unit, onComplete: () -> Unit) {
+    this.runTransaction(object : Transaction.Handler {
+        override fun doTransaction(mutableData: MutableData): Transaction.Result {
+            val p = mutableData.getValue<T>(clazz) ?: return Transaction.success(mutableData)
+            action.invoke(p)
+            mutableData.value = p
+            return Transaction.success(mutableData)
+        }
+
+        override fun onComplete(error: DatabaseError?, b: Boolean, dataSnapshot: DataSnapshot?) {
+            if (error != null) onError.invoke()
+            onComplete.invoke()
+        }
+    })
 }

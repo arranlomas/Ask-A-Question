@@ -16,7 +16,9 @@ class QuestionsAdapter(val itemClickListener: (Question, ACTION) -> Unit) : Recy
     var items: List<Question> = emptyList()
 
     enum class ACTION {
-        OPEN
+        CLICK,
+        VOTE_UP,
+        VOTE_DOWN
     }
 
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): QuestionViewHolder {
@@ -40,5 +42,8 @@ class QuestionViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
 
     fun bind(question: Question, onAction: (QuestionsAdapter.ACTION) -> Unit) = with(view) {
         question_text.text = question.questionText
+        question_points.text = question.votes.toString()
+        question_vote_down.setOnClickListener {onAction.invoke(QuestionsAdapter.ACTION.VOTE_DOWN)}
+        question_vote_up.setOnClickListener {onAction.invoke(QuestionsAdapter.ACTION.VOTE_UP) }
     }
 }
