@@ -24,9 +24,15 @@ class FirebaseApi : IFirebaseApi {
 
     override val questionUpdateObservable: PublishSubject<List<Question>> = PublishSubject.create()
 
+    sealed class VoteResult {
+        object Success : VoteResult()
+        object Failure : VoteResult()
+        object AlreadyVoted : VoteResult()
+    }
+
     override fun postQuestion(question: String): Observable<String> {
         return questionsRef.push().setValueObservable(Question(question, 1))
-                .map { voteUpQuestion(it); it }
+                .flatMap { addSelfToVotersList(it, it, true) }
                 .composeIo()
     }
 
@@ -44,7 +50,6 @@ class FirebaseApi : IFirebaseApi {
         val postRef = questionsRef.child(firebaseKey)
         val transaction = createVoteTransaction { it.votes = it.votes + 1 }
         return postRef.createTransactionObservable(Question::class.java, transaction, VoteResult.Success, VoteResult.Failure)
-
     }
 
     override fun <T>addSelfToVotersList(input: T, firebaseKey: String, voteUp: Boolean): Observable<T>{
@@ -52,12 +57,6 @@ class FirebaseApi : IFirebaseApi {
             return questionsRef.child(firebaseKey).child(KEY_VOTERS).child(it).setValueObservable(voteUp)
                     .map { input }
         } ?: return getNullAuthObservable(input)
-    }
-
-    sealed class VoteResult {
-        object Success : VoteResult()
-        object Failure : VoteResult()
-        object AlreadyVoted : VoteResult()
     }
 
     private fun createVoteTransaction(action: (Question) -> Unit): (Question) -> Boolean {

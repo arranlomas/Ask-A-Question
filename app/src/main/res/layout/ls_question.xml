@@ -24,14 +24,14 @@
                 android:id="@+id/question_vote_up"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_arrow_upward"
+                android:src="@drawable/ic_arrow_upward_accent"
                 android:layout_weight="1"/>
 
             <ImageView
                 android:id="@+id/question_vote_down"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_arrow_downward"
+                android:src="@drawable/ic_arrow_downward_deselected"
                 android:layout_weight="1"/>
 
         </LinearLayout>

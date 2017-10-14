@@ -1,5 +1,6 @@
 package com.arran.askaquestion.views.main.list
 
+import android.support.v4.content.res.ResourcesCompat
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -43,7 +44,21 @@ class QuestionViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
     fun bind(question: Question, onAction: (QuestionsAdapter.ACTION) -> Unit) = with(view) {
         question_text.text = question.questionText
         question_points.text = question.votes.toString()
-        question_vote_down.setOnClickListener {onAction.invoke(QuestionsAdapter.ACTION.VOTE_DOWN)}
-        question_vote_up.setOnClickListener {onAction.invoke(QuestionsAdapter.ACTION.VOTE_UP) }
+        question_vote_down.setOnClickListener { onAction.invoke(QuestionsAdapter.ACTION.VOTE_DOWN) }
+        question_vote_up.setOnClickListener { onAction.invoke(QuestionsAdapter.ACTION.VOTE_UP) }
+        when (question.getUserVote()) {
+            Question.UserVoteState.UNVOTED -> {
+                question_vote_up.setImageDrawable(ResourcesCompat.getDrawable(resources, R.drawable.ic_arrow_upward_faded, null))
+                question_vote_down.setImageDrawable(ResourcesCompat.getDrawable(resources, R.drawable.ic_arrow_downward_deselected, null))
+            }
+            Question.UserVoteState.UP -> {
+                question_vote_up.setImageDrawable(ResourcesCompat.getDrawable(resources, R.drawable.ic_arrow_upward_accent, null))
+                question_vote_down.setImageDrawable(ResourcesCompat.getDrawable(resources, R.drawable.ic_arrow_downward_deselected, null))
+            }
+            Question.UserVoteState.DOWN -> {
+                question_vote_up.setImageDrawable(ResourcesCompat.getDrawable(resources, R.drawable.ic_arrow_upward_faded, null))
+                question_vote_down.setImageDrawable(ResourcesCompat.getDrawable(resources, R.drawable.ic_arrow_downward_accent, null))
+            }
+        }
     }
 }
