@@ -12,16 +12,9 @@ import es.dmoral.toasty.Toasty
  * Created by arran on 11/07/2017.
  */
 open class BaseActivity: AppCompatActivity(), BaseContract.MvpView {
+
     override fun getActivity(): Activity? {
         return this
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
-        super.onCreate(savedInstanceState, persistentState)
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
     }
 
     override fun showError(msg: String) {
@@ -31,6 +24,26 @@ open class BaseActivity: AppCompatActivity(), BaseContract.MvpView {
 
     override fun showError(stringRes: Int) {
         Toasty.error(this,getString(stringRes), Toast.LENGTH_SHORT, true).show()
+        Log.v("Error at ${this.javaClass.name}", getString(stringRes))
+    }
+
+    override fun showInfo(msg: String) {
+        Toasty.info(this, msg, Toast.LENGTH_SHORT, true).show()
+        Log.v("Error at ${this.javaClass.name}", msg)
+    }
+
+    override fun showInfo(stringRes: Int) {
+        Toasty.info(this,getString(stringRes), Toast.LENGTH_SHORT, true).show()
+        Log.v("Error at ${this.javaClass.name}", getString(stringRes))
+    }
+
+    override fun showSuccess(msg: String) {
+        Toasty.success(this, msg, Toast.LENGTH_SHORT, true).show()
+        Log.v("Error at ${this.javaClass.name}", msg)
+    }
+
+    override fun showSuccess(stringRes: Int) {
+        Toasty.success(this,getString(stringRes), Toast.LENGTH_SHORT, true).show()
         Log.v("Error at ${this.javaClass.name}", getString(stringRes))
     }
 }

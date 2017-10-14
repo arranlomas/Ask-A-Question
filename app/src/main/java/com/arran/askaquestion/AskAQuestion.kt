@@ -12,7 +12,6 @@ object AskAQuestion {
 
     fun install() {
         val firebaseRepositoryComponent = DaggerFirebaseRepositoryComponent.builder().build()
-
         presenterComponent = DaggerPresenterComponent.builder()
                 .firebaseRepositoryComponent(firebaseRepositoryComponent)
                 .build()
