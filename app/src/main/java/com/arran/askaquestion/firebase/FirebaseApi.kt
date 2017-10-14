@@ -20,7 +20,7 @@ class FirebaseApi : IFirebaseApi {
     override val questionUpdateObservable: PublishSubject<List<Question>> = PublishSubject.create()
 
     override fun postQuestion(question: String): Observable<String> {
-        return database.child(KEY_QUESTIONS).push().setValueObservable(Question(question))
+        return database.child(KEY_QUESTIONS).push().setValueObservable(Question(question, 0))
                 .composeIo()
     }
 
