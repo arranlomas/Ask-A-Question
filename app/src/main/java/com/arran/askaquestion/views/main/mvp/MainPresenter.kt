@@ -19,7 +19,7 @@ class MainPresenter(val firebaseRepository: IFirebaseRepository) : BasePresenter
         firebaseRepository.questionUpdateObservable
                 .subscribe(object : BaseSubscriber<List<Question>>() {
                     override fun onNext(questions: List<Question>) {
-                        mvpView.showQuestions(questions)
+                        mvpView.showQuestions(questions.sortedByDescending { it.votes })
                     }
                 })
     }
