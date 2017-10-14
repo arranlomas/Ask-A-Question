@@ -15,7 +15,7 @@ class MainApplication : MultiDexApplication() {
         AskAQuestion.install()
         auth = FirebaseAuth.getInstance()
         val currentUser = auth.currentUser
-        currentUser?.let { AskAQuestion.currentUser } ?:
+        currentUser?.let { AskAQuestion.currentUser = it } ?:
                 auth.signInAnonymously().addOnCompleteListener {
                     if (it.isSuccessful) {
                         auth.currentUser?.let { AskAQuestion.currentUser }

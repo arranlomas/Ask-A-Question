@@ -11,11 +11,13 @@ import rx.subjects.PublishSubject
 class FirebaseRepository(val firebaseApi: IFirebaseApi): IFirebaseRepository {
     override fun voteUpQuestion(firebaseKey: String): Observable<FirebaseApi.VoteResult> {
         return firebaseApi.voteUpQuestion(firebaseKey)
+                .flatMap { firebaseApi.addSelfToVotersList(it, firebaseKey, true) }
                 .composeIo()
     }
 
     override fun voteDownQuestion(firebaseKey: String): Observable<FirebaseApi.VoteResult> {
         return firebaseApi.voteDownQuestion(firebaseKey)
+                .flatMap { firebaseApi.addSelfToVotersList(it, firebaseKey, true) }
                 .composeIo()
     }
 

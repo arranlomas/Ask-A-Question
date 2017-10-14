@@ -3,6 +3,8 @@
 
     <!--Errors-->
     <string name="unexpected_error">Unexpected Error</string>
+    <string name="error_already_voted">Error, You have already voted</string>
+
 
     <!--add new question dialog-->
     <string name="add_new_question_dialog_title">Enter your question below and press send</string>
@@ -13,6 +15,5 @@
     <string name="send_question_success">Question Sent</string>
     <string name="upvote_question_success">Question Upvoted</string>
     <string name="downvote_question_success">Question Downvoted</string>
-
 </resources>
 

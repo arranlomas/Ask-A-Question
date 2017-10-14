@@ -6,5 +6,5 @@ package com.arran.askaquestion.models
 data class Question(
         var questionText: String = "",
         var votes: Int = 0,
-        var voters: HashMap<String, Boolean> = hashMapOf()
+        var voters: Map<String, Boolean> = mapOf()
 ) : FirebaseObject()

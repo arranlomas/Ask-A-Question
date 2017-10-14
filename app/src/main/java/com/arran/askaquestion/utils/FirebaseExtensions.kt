@@ -55,24 +55,28 @@ fun <T> getEventListenerList(onError: (Exception) -> Unit, onDataChange: (List<T
     }
 }
 
-fun <T, R> DatabaseReference.createTransactionObservable(clazz: Class<T>, action: (T) -> Unit, success: R, error: R): Observable<R> {
+fun <T, R> DatabaseReference.createTransactionObservable(clazz: Class<T>, action: (T) -> Boolean, success: R, error: R): Observable<R> {
     return Observable.create<R>({ subscriber ->
         this.transactAsync(clazz, action, { subscriber.onNext(error) }, { subscriber.onNext(success) })
     }, Emitter.BackpressureMode.BUFFER)
             .observeOn(Schedulers.computation())
 }
 
-fun <T> DatabaseReference.transactAsync(clazz: Class<T>, action: (T) -> Unit, onError: () -> Unit, onComplete: () -> Unit) {
+fun <T> DatabaseReference.transactAsync(clazz: Class<T>, action: (T) -> Boolean, onError: () -> Unit, onComplete: () -> Unit) {
     this.runTransaction(object : Transaction.Handler {
         override fun doTransaction(mutableData: MutableData): Transaction.Result {
             val p = mutableData.getValue<T>(clazz) ?: return Transaction.success(mutableData)
-            action.invoke(p)
-            mutableData.value = p
-            return Transaction.success(mutableData)
+            val executed = action.invoke(p)
+            if (executed){
+                mutableData.value = p
+                return Transaction.success(mutableData)
+            }else{
+                return Transaction.abort()
+            }
         }
 
         override fun onComplete(error: DatabaseError?, b: Boolean, dataSnapshot: DataSnapshot?) {
-            if (error != null) onError.invoke()
+            if (!b) onError.invoke()
             onComplete.invoke()
         }
     })

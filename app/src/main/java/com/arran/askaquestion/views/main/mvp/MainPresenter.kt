@@ -15,7 +15,6 @@ class MainPresenter(val firebaseRepository: IFirebaseRepository) : BasePresenter
     override fun attachView(mvpView: MainContract.View) {
         super.attachView(mvpView)
         firebaseRepository.attachListenerToQuestionsDatabase()
-
         firebaseRepository.questionUpdateObservable
                 .subscribe(object : BaseSubscriber<List<Question>>() {
                     override fun onNext(questions: List<Question>) {
@@ -41,7 +40,8 @@ class MainPresenter(val firebaseRepository: IFirebaseRepository) : BasePresenter
                         override fun onNext(voteResult: FirebaseApi.VoteResult) {
                             when(voteResult){
                                 FirebaseApi.VoteResult.Success -> mvpView.showSuccess(R.string.upvote_question_success)
-                                else -> mvpView.showError()
+                                FirebaseApi.VoteResult.Failure -> mvpView.showError()
+                                FirebaseApi.VoteResult.AlreadyVoted -> mvpView.showError()
                             }
                         }
                     })

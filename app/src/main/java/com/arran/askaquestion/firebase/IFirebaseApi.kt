@@ -13,4 +13,5 @@ interface IFirebaseApi {
     fun listenToAllQuestionUbdates()
     fun voteUpQuestion(firebaseKey: String): Observable<FirebaseApi.VoteResult>
     fun voteDownQuestion(firebaseKey: String): Observable<FirebaseApi.VoteResult>
+    fun  <T>addSelfToVotersList(input: T, firebaseKey: String, voteUp: Boolean): Observable<T>
 }

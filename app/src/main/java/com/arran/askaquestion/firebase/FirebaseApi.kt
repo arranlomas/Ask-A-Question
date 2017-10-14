@@ -17,6 +17,7 @@ import rx.subjects.PublishSubject
 class FirebaseApi : IFirebaseApi {
 
     private val KEY_QUESTIONS = "questions"
+    private val KEY_VOTERS = "voters"
 
     private val database = FirebaseDatabase.getInstance().reference
     private val questionsRef = database.child(KEY_QUESTIONS)
@@ -24,7 +25,8 @@ class FirebaseApi : IFirebaseApi {
     override val questionUpdateObservable: PublishSubject<List<Question>> = PublishSubject.create()
 
     override fun postQuestion(question: String): Observable<String> {
-        return questionsRef.push().setValueObservable(Question(question, 0))
+        return questionsRef.push().setValueObservable(Question(question, 1))
+                .map { voteUpQuestion(it); it }
                 .composeIo()
     }
 
@@ -35,29 +37,42 @@ class FirebaseApi : IFirebaseApi {
     override fun voteDownQuestion(firebaseKey: String): Observable<VoteResult> {
         val postRef = questionsRef.child(firebaseKey)
         val transaction = createVoteTransaction { it.votes = it.votes - 1 }
-        return postRef.createTransactionObservable(Question::class.java, transaction, VoteResult.Success, VoteResult.Success)
+        return postRef.createTransactionObservable(Question::class.java, transaction, VoteResult.Success, VoteResult.Failure)
     }
 
     override fun voteUpQuestion(firebaseKey: String): Observable<VoteResult> {
         val postRef = questionsRef.child(firebaseKey)
         val transaction = createVoteTransaction { it.votes = it.votes + 1 }
-        return postRef.createTransactionObservable(Question::class.java, transaction, VoteResult.Success, VoteResult.Success)
+        return postRef.createTransactionObservable(Question::class.java, transaction, VoteResult.Success, VoteResult.Failure)
+
     }
 
-    sealed class VoteResult{
-        object Success: VoteResult()
-        object Failure: VoteResult()
+    override fun <T>addSelfToVotersList(input: T, firebaseKey: String, voteUp: Boolean): Observable<T>{
+        AskAQuestion.currentUser?.uid?.let {
+            return questionsRef.child(firebaseKey).child(KEY_VOTERS).child(it).setValueObservable(voteUp)
+                    .map { input }
+        } ?: return getNullAuthObservable(input)
     }
 
+    sealed class VoteResult {
+        object Success : VoteResult()
+        object Failure : VoteResult()
+        object AlreadyVoted : VoteResult()
+    }
 
-    private fun createVoteTransaction(action: (Question) -> Unit): (Question) -> Unit {
+    private fun createVoteTransaction(action: (Question) -> Unit): (Question) -> Boolean {
         return { question ->
-            val uid = AskAQuestion.currentUser?.uid
-            if (!question.voters.contains(uid)) {
-                action.invoke(question)
-
-                uid?.let { question.voters.put(uid, false) }
-            }
+            AskAQuestion.currentUser?.uid?.let {
+                if (!question.voters.containsKey(it)) {
+                    action.invoke(question)
+                    return@let true
+                }
+                else return@let false
+            } ?: false
         }
+    }
+
+    private fun <T>getNullAuthObservable(returnObject: T): Observable<T> {
+        return Observable.just(returnObject).doOnNext { throw IllegalStateException("User must be logged in") }
     }
 }
