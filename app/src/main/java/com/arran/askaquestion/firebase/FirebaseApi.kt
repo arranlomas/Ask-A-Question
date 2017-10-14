@@ -2,10 +2,7 @@ package com.arran.askaquestion.firebase
 
 import com.arran.askaquestion.AskAQuestion
 import com.arran.askaquestion.models.Question
-import com.arran.askaquestion.utils.attachPublishSubjectToEventList
-import com.arran.askaquestion.utils.composeIo
-import com.arran.askaquestion.utils.createTransactionObservable
-import com.arran.askaquestion.utils.setValueObservable
+import com.arran.askaquestion.utils.*
 import com.google.firebase.database.FirebaseDatabase
 import rx.Observable
 import rx.subjects.PublishSubject
@@ -40,13 +37,13 @@ class FirebaseApi : IFirebaseApi {
         return questionsRef.attachPublishSubjectToEventList(Question::class.java, questionUpdateObservable)
     }
 
-    override fun voteDownQuestion(firebaseKey: String): Observable<VoteResult> {
+    override fun decreaseQuestionVoteCount(firebaseKey: String): Observable<VoteResult> {
         val postRef = questionsRef.child(firebaseKey)
         val transaction = createVoteTransaction { it.votes = it.votes - 1 }
         return postRef.createTransactionObservable(Question::class.java, transaction, VoteResult.Success, VoteResult.Failure)
     }
 
-    override fun voteUpQuestion(firebaseKey: String): Observable<VoteResult> {
+    override fun incrementQuestionVoteCount(firebaseKey: String): Observable<VoteResult> {
         val postRef = questionsRef.child(firebaseKey)
         val transaction = createVoteTransaction { it.votes = it.votes + 1 }
         return postRef.createTransactionObservable(Question::class.java, transaction, VoteResult.Success, VoteResult.Failure)
@@ -69,6 +66,12 @@ class FirebaseApi : IFirebaseApi {
                 else return@let false
             } ?: false
         }
+    }
+
+    override fun retractVote(firebaseKey: String): Observable<Boolean> {
+        AskAQuestion.currentUser?.uid?.let {
+           return questionsRef.child(firebaseKey).child(KEY_VOTERS).child(it).removeValueObservable()
+        } ?: return getNullAuthObservable(false)
     }
 
     private fun <T>getNullAuthObservable(returnObject: T): Observable<T> {

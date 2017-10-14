@@ -12,4 +12,6 @@ interface IFirebaseRepository {
     fun addNewQuestion(question: String): Observable<String>
     fun attachListenerToQuestionsDatabase()
     fun voteUpQuestion(firebaseKey: String): Observable<FirebaseApi.VoteResult>
-    fun voteDownQuestion(firebaseKey: String): Observable<FirebaseApi.VoteResult>}
+    fun voteDownQuestion(firebaseKey: String): Observable<FirebaseApi.VoteResult>
+    fun retractVote(firebaseKey: String, userVoteState: Question.UserVoteState): Observable<Boolean>
+}

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/card_view"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/question_card_height"
+    android:layout_height="wrap_content"
     card_view:cardCornerRadius="4dp"
     android:layout_margin="@dimen/small_padding"
     android:padding="@dimen/small_padding">
@@ -27,6 +27,14 @@
                 android:src="@drawable/ic_arrow_upward_accent"
                 android:layout_weight="1"/>
 
+            <TextView
+                android:id="@+id/question_points"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                tools:text="2"
+                android:maxLength="3"/>
+
             <ImageView
                 android:id="@+id/question_vote_down"
                 android:layout_width="wrap_content"
@@ -41,20 +49,13 @@
         android:layout_height="match_parent"
         android:padding="@dimen/small_padding"
         android:orientation="vertical">
+
         <TextView
             android:id="@+id/question_text"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:gravity="center_vertical"
-            tools:text="This is some question :D"
-            android:layout_weight="1"/>
-
-        <TextView
-            android:id="@+id/question_points"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            tools:text="200 votes" />
+            tools:text="This is some question :D"/>
     </LinearLayout>
 
 

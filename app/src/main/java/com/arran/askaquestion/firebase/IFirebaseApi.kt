@@ -11,7 +11,8 @@ interface IFirebaseApi {
     val questionUpdateObservable: PublishSubject<List<Question>>
     fun postQuestion(question: String): Observable<String>
     fun listenToAllQuestionUbdates()
-    fun voteUpQuestion(firebaseKey: String): Observable<FirebaseApi.VoteResult>
-    fun voteDownQuestion(firebaseKey: String): Observable<FirebaseApi.VoteResult>
+    fun incrementQuestionVoteCount(firebaseKey: String): Observable<FirebaseApi.VoteResult>
+    fun decreaseQuestionVoteCount(firebaseKey: String): Observable<FirebaseApi.VoteResult>
+    fun retractVote(firebaseKey: String): Observable<Boolean>
     fun  <T>addSelfToVotersList(input: T, firebaseKey: String, voteUp: Boolean): Observable<T>
 }

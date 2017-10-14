@@ -6,6 +6,7 @@ import com.arran.askaquestion.firebase.IFirebaseRepository
 import com.arran.askaquestion.models.Question
 import com.arran.askaquestion.views.base.BasePresenter
 import com.arran.askaquestion.views.main.list.QuestionsAdapter
+import rx.Subscriber
 
 /**
  * Created by arran on 11/07/2017.
@@ -35,25 +36,62 @@ class MainPresenter(val firebaseRepository: IFirebaseRepository) : BasePresenter
     override fun onListItemAction(question: Question, action: QuestionsAdapter.ACTION) {
         when (action) {
             QuestionsAdapter.ACTION.CLICK -> TODO()
-            QuestionsAdapter.ACTION.VOTE_UP -> firebaseRepository.voteUpQuestion(question.firebaseKey)
-                    .subscribe(object : BaseSubscriber<FirebaseApi.VoteResult>(){
-                        override fun onNext(voteResult: FirebaseApi.VoteResult) {
-                            when(voteResult){
-                                FirebaseApi.VoteResult.Success -> mvpView.showSuccess(R.string.upvote_question_success)
-                                FirebaseApi.VoteResult.Failure -> mvpView.showError()
-                                FirebaseApi.VoteResult.AlreadyVoted -> mvpView.showError()
-                            }
-                        }
-                    })
-            QuestionsAdapter.ACTION.VOTE_DOWN -> firebaseRepository.voteDownQuestion(question.firebaseKey)
-                    .subscribe(object : BaseSubscriber<FirebaseApi.VoteResult>(){
-                        override fun onNext(voteResult: FirebaseApi.VoteResult) {
-                            when(voteResult){
-                                FirebaseApi.VoteResult.Success -> mvpView.showSuccess(R.string.downvote_question_success)
-                                else -> mvpView.showError()
-                            }
-                        }
-                    })
+            QuestionsAdapter.ACTION.VOTE_UP -> {
+                val userVoteState = question.getUserVote()
+                when(userVoteState){
+                    Question.UserVoteState.UNVOTED -> upvote(question.firebaseKey)
+                    Question.UserVoteState.UP -> retractVote(question.firebaseKey, userVoteState)
+                    Question.UserVoteState.DOWN -> {
+                        retractVote(question.firebaseKey, userVoteState)
+                        downvote(question.firebaseKey)
+                    }
+                }
+
+            }
+            QuestionsAdapter.ACTION.VOTE_DOWN -> {
+                val userVoteState = question.getUserVote()
+                when(userVoteState){
+                    Question.UserVoteState.UNVOTED -> downvote(question.firebaseKey)
+                    Question.UserVoteState.UP -> {
+                        retractVote(question.firebaseKey, userVoteState)
+                        upvote(question.firebaseKey)
+                    }
+                    Question.UserVoteState.DOWN -> {
+                        retractVote(question.firebaseKey, userVoteState)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun upvote(firebaseKey: String){
+        firebaseRepository.voteUpQuestion(firebaseKey)
+                .subscribe(getVoteSubscriber())
+    }
+
+    private fun downvote(firebaseKey: String){
+        firebaseRepository.voteDownQuestion(firebaseKey)
+                .subscribe(getVoteSubscriber())
+    }
+
+    private fun retractVote(firebaseKey: String, userVoteState: Question.UserVoteState){
+        firebaseRepository.retractVote(firebaseKey, userVoteState)
+                .subscribe(getRetractVoteSubscriber())
+    }
+
+    private fun getRetractVoteSubscriber(): Subscriber<Boolean>{
+        return object : BaseSubscriber<Boolean>(){
+            override fun onNext(retracted: Boolean) {
+                if(!retracted) mvpView.showError()
+            }
+        }
+    }
+
+    private fun getVoteSubscriber(): Subscriber<FirebaseApi.VoteResult>{
+        return object : BaseSubscriber<FirebaseApi.VoteResult>(){
+            override fun onNext(voteResult: FirebaseApi.VoteResult) {
+                if(voteResult != FirebaseApi.VoteResult.Success)mvpView.showError()
+            }
         }
     }
 }

@@ -24,6 +24,16 @@ fun <T> DatabaseReference.setValueObservable(item: T): Observable<String> {
             .observeOn(Schedulers.computation())
 }
 
+fun DatabaseReference.removeValueObservable(): Observable<Boolean> {
+    return Observable.create<Boolean>({ subscriber ->
+        this.removeValue().addOnCompleteListener {
+            if(it.isSuccessful)subscriber.onNext(true)
+            else subscriber.onError(it.exception)
+        }
+    }, Emitter.BackpressureMode.BUFFER)
+            .observeOn(Schedulers.computation())
+}
+
 fun <T> DatabaseReference.attachPublishSubjectToEventList(clazz: Class<T>, publishSubject: PublishSubject<List<T>>) {
     this.addValueEventListener(getEventListenerList(onError = {
         publishSubject.onError(IllegalStateException("value event listener cancelled ${it.message}"))

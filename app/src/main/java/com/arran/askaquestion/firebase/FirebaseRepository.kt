@@ -9,14 +9,15 @@ import rx.subjects.PublishSubject
  * Created by arran on 14/10/2017.
  */
 class FirebaseRepository(val firebaseApi: IFirebaseApi): IFirebaseRepository {
+
     override fun voteUpQuestion(firebaseKey: String): Observable<FirebaseApi.VoteResult> {
-        return firebaseApi.voteUpQuestion(firebaseKey)
+        return firebaseApi.incrementQuestionVoteCount(firebaseKey)
                 .flatMap { firebaseApi.addSelfToVotersList(it, firebaseKey, true) }
                 .composeIo()
     }
 
     override fun voteDownQuestion(firebaseKey: String): Observable<FirebaseApi.VoteResult> {
-        return firebaseApi.voteDownQuestion(firebaseKey)
+        return firebaseApi.decreaseQuestionVoteCount(firebaseKey)
                 .flatMap { firebaseApi.addSelfToVotersList(it, firebaseKey, false) }
                 .composeIo()
     }
@@ -30,6 +31,24 @@ class FirebaseRepository(val firebaseApi: IFirebaseApi): IFirebaseRepository {
 
     override fun addNewQuestion(question: String): Observable<String> {
         return firebaseApi.postQuestion(question)
+                .composeIo()
+    }
+
+    override fun retractVote(firebaseKey: String, userVoteState: Question.UserVoteState): Observable<Boolean> {
+        return firebaseApi.retractVote(firebaseKey)
+                .flatMap {
+                    when(userVoteState){
+                        Question.UserVoteState.UP -> firebaseApi.decreaseQuestionVoteCount(firebaseKey)
+                        Question.UserVoteState.UNVOTED -> Observable.just(FirebaseApi.VoteResult.Success)
+                        Question.UserVoteState.DOWN -> firebaseApi.incrementQuestionVoteCount(firebaseKey)
+                    }
+                }
+                .map { when(it){
+                    FirebaseApi.VoteResult.Success -> true
+                    FirebaseApi.VoteResult.Failure -> false
+                    FirebaseApi.VoteResult.AlreadyVoted -> false
+                }
+                }
                 .composeIo()
     }
 }
