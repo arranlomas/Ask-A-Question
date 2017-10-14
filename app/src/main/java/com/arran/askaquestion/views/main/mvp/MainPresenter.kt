@@ -43,7 +43,7 @@ class MainPresenter(val firebaseRepository: IFirebaseRepository) : BasePresenter
                     Question.UserVoteState.UP -> retractVote(question.firebaseKey, userVoteState)
                     Question.UserVoteState.DOWN -> {
                         retractVote(question.firebaseKey, userVoteState)
-                        downvote(question.firebaseKey)
+                        upvote(question.firebaseKey)
                     }
                 }
 
@@ -54,7 +54,7 @@ class MainPresenter(val firebaseRepository: IFirebaseRepository) : BasePresenter
                     Question.UserVoteState.UNVOTED -> downvote(question.firebaseKey)
                     Question.UserVoteState.UP -> {
                         retractVote(question.firebaseKey, userVoteState)
-                        upvote(question.firebaseKey)
+                        downvote(question.firebaseKey)
                     }
                     Question.UserVoteState.DOWN -> {
                         retractVote(question.firebaseKey, userVoteState)
