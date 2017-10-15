@@ -17,3 +17,9 @@ settings -> security -> check Unknown sources (also recommend you check Verify a
 This app is used as a sandbox for me to play around, we use it with some collegues to add questions for our discussions.
 
 DO NOT PUT PRIVATE INFORMATION ON THE APP - the questions posted are visible to anyone that downloads the apk, do not post private info
+
+Screenshots:
+
+![alt text](https://raw.githubusercontent.com/arranlomas/Ask-A-Question/blob/master/ask-a-question-screenshot-b.png)
+
+![alt text](https://raw.githubusercontent.com/arranlomas/Ask-A-Question/blob/master/ask-a-question-screenshot-a.png)
