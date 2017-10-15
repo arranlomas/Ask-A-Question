@@ -20,6 +20,6 @@ DO NOT PUT PRIVATE INFORMATION ON THE APP - the questions posted are visible to 
 
 Screenshots:
 
-![alt text](https://raw.githubusercontent.com/arranlomas/Ask-A-Question/blob/master/ask-a-question-screenshot-b.png)
+![Main Screen](https://github.com/arranlomas/Ask-A-Question/blob/master/ask-a-question-screenshot-b.png)
 
-![alt text](https://raw.githubusercontent.com/arranlomas/Ask-A-Question/blob/master/ask-a-question-screenshot-a.png)
+![Add question dialog](https://github.com/arranlomas/Ask-A-Question/blob/master/ask-a-question-screenshot-a.png)
