@@ -30,8 +30,8 @@ class FirebaseRepository(val firebaseApi: IFirebaseApi): IFirebaseRepository {
         firebaseApi.listenToAllQuestionUbdates()
     }
 
-    override fun addNewQuestion(question: String, channel: Channel): Observable<String> {
-        return firebaseApi.postQuestion(question, channel)
+    override fun addNewQuestion(question: String, channelKey: String): Observable<String> {
+        return firebaseApi.postQuestion(question, channelKey)
                 .composeIo()
     }
 
@@ -50,6 +50,11 @@ class FirebaseRepository(val firebaseApi: IFirebaseApi): IFirebaseRepository {
                     FirebaseApi.VoteResult.AlreadyVoted -> false
                 }
                 }
+                .composeIo()
+    }
+
+    override fun createChannel(channelName: String, channelPassword: String): Observable<String> {
+        return firebaseApi.createChannel(Channel(channelName, channelPassword))
                 .composeIo()
     }
 }

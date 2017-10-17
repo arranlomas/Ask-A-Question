@@ -8,17 +8,17 @@ import com.google.firebase.database.FirebaseDatabase
 import rx.Observable
 import rx.subjects.PublishSubject
 
-
 /**
  * Created by arran on 17/07/2017.
  */
 class FirebaseApi : IFirebaseApi {
-
     private val KEY_QUESTIONS = "questions"
     private val KEY_VOTERS = "voters"
+    private val KEY_CHANNELS = "channels"
 
     private val database = FirebaseDatabase.getInstance().reference
     private val questionsRef = database.child(KEY_QUESTIONS)
+    private val channelsRef = database.child(KEY_CHANNELS)
 
     override val questionUpdateObservable: PublishSubject<List<Question>> = PublishSubject.create()
 
@@ -28,8 +28,12 @@ class FirebaseApi : IFirebaseApi {
         object AlreadyVoted : VoteResult()
     }
 
-    override fun postQuestion(question: String, channel: Channel): Observable<String> {
-        return questionsRef.push().setValueObservable(Question(question, 1, channel = channel))
+    private fun <T>getNullAuthObservable(returnObject: T): Observable<T> {
+        return Observable.just(returnObject).doOnNext { throw IllegalStateException("User must be logged in") }
+    }
+
+    override fun postQuestion(question: String, channelKey: String): Observable<String> {
+        return questionsRef.push().setValueObservable(Question(question, 1, channelKey = channelKey))
                 .flatMap { addSelfToVotersList(it, it, true) }
                 .composeIo()
     }
@@ -75,7 +79,7 @@ class FirebaseApi : IFirebaseApi {
         } ?: return getNullAuthObservable(false)
     }
 
-    private fun <T>getNullAuthObservable(returnObject: T): Observable<T> {
-        return Observable.just(returnObject).doOnNext { throw IllegalStateException("User must be logged in") }
+    override fun createChannel(channel: Channel): Observable<String> {
+       return channelsRef.push().setValueObservable(channel)
     }
 }

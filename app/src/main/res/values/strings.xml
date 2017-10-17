@@ -10,8 +10,19 @@
     <string name="add_new_question_dialog_title">Enter your question below and press send</string>
     <string name="add_new_question_dialog_positive">Send</string>
 
+    <!--add new channel dialog-->
+    <string name="create_new_channel_dialog_title">Enter the channel details below and press create</string>
+    <string name="create_new_channel_dialog_positive">Create</string>
+    <string name="create_new_channel_dialog_channel_name_hint">Channel Name</string>
+    <string name="create_new_channel_dialog_channel_password_hint">Channel Password</string>
 
     <!--main-->
+    <!--navigation drawer-->
+    <string name="drawer_item_new_channel">Create New Channel</string>
+    <string name="drawer_item_join_channel">Join Channel</string>
+    <string name="channel_create">Channel Created</string>
+
+    <!--questions-->
     <string name="send_question_success">Question Sent</string>
     <string name="upvote_question_success">Question Upvoted</string>
     <string name="downvote_question_success">Question Downvoted</string>

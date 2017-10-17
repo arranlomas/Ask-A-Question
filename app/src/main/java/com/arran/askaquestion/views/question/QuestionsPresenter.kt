@@ -26,7 +26,7 @@ class QuestionsPresenter(val firebaseRepository: IFirebaseRepository) : BasePres
     }
 
     override fun sendNewQuestion(text: String) {
-        firebaseRepository.addNewQuestion(text, Channel("test"))
+        firebaseRepository.addNewQuestion(text, "test")
                 .subscribe(object : BaseSubscriber<String>() {
                     override fun onNext(firebaseKey: String) {
                         mvpView.showSuccess(R.string.send_question_success)

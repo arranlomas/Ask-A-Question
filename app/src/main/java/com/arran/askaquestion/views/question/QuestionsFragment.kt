@@ -66,7 +66,6 @@ class QuestionsFragment : BaseFragment(), QuestionsContract.View {
                     } ?: showError()
                 }
                 .show()
-
     }
 
     override fun showQuestions(questions: List<Question>) {

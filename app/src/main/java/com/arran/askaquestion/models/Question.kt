@@ -10,7 +10,7 @@ data class Question(
         var questionText: String = "",
         var votes: Int = 0,
         var voters: Map<String, Boolean> = mapOf(),
-        var channel: Channel? = null
+        var channelKey: String? = null
 ) : FirebaseObject(){
     enum class UserVoteState{
         UNVOTED,

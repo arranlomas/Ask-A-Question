@@ -10,5 +10,6 @@ interface MainContract {
     }
 
     interface Presenter : BaseContract.Presenter<View> {
+        fun createNewChannel(channelName: String, channelPassword: String)
     }
 }

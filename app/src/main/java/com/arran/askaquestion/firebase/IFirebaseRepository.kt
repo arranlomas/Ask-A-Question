@@ -10,9 +10,10 @@ import rx.subjects.PublishSubject
  */
 interface IFirebaseRepository {
     val questionUpdateObservable: PublishSubject<List<Question>>
-    fun addNewQuestion(question: String, channel: Channel): Observable<String>
+    fun addNewQuestion(question: String, channelKey: String): Observable<String>
     fun attachListenerToQuestionsDatabase()
     fun voteUpQuestion(firebaseKey: String): Observable<FirebaseApi.VoteResult>
     fun voteDownQuestion(firebaseKey: String): Observable<FirebaseApi.VoteResult>
     fun retractVote(firebaseKey: String, userVoteState: Question.UserVoteState): Observable<Boolean>
+    fun createChannel(channelName: String, channelPassword: String): Observable<String>
 }
