@@ -13,8 +13,7 @@ import rx.Subscriber
  */
 class QuestionsPresenter(val firebaseRepository: IFirebaseRepository) : BasePresenter<QuestionsContract.View>(), QuestionsContract.Presenter {
 
-    override fun attachView(mvpView: QuestionsContract.View) {
-        super.attachView(mvpView)
+    override fun reload(channelKey: String?) {
         firebaseRepository.attachListenerToQuestionsDatabase()
         firebaseRepository.questionUpdateObservable
                 .subscribe(object : BaseSubscriber<List<Question>>() {

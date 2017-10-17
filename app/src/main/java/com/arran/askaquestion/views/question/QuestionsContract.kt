@@ -13,6 +13,7 @@ interface QuestionsContract {
     }
 
     interface Presenter : BaseContract.Presenter<View> {
+        fun reload(channelKey: String?)
         fun onListItemAction(question: Question, action: QuestionsAdapter.ACTION)
         fun sendNewQuestion(text: String)
     }

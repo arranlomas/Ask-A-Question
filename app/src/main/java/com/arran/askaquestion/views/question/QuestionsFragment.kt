@@ -13,7 +13,6 @@ import com.arran.askaquestion.AskAQuestion
 import com.arran.askaquestion.R
 import com.arran.askaquestion.models.Question
 import com.arran.askaquestion.views.base.BaseFragment
-import com.arran.askaquestion.views.main.MainActivityModule
 import com.arran.askaquestion.views.question.list.QuestionsAdapter
 import kotlinx.android.synthetic.main.frag_questions.*
 import javax.inject.Inject
@@ -26,10 +25,25 @@ class QuestionsFragment : BaseFragment(), QuestionsContract.View {
 
     lateinit var adapter: QuestionsAdapter
 
-    companion object{
-        fun newInstance(): Fragment{
-            return QuestionsFragment()
+    private var channelKey: String? = null
+
+    companion object {
+        val ARG_CHANNEL_KEY = "arg_channel_key"
+
+        fun newInstance(channelKey: String?): Fragment {
+            val frag = QuestionsFragment()
+            channelKey?.let {
+                val bundle = Bundle()
+                bundle.putString(ARG_CHANNEL_KEY, channelKey)
+                frag.arguments = bundle
+            }
+            return frag
         }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        this.arguments?.let { channelKey = it.getString(ARG_CHANNEL_KEY, null) }
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -40,6 +54,7 @@ class QuestionsFragment : BaseFragment(), QuestionsContract.View {
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         presenter.attachView(this)
+        presenter.reload(channelKey)
 
         fab.setOnClickListener { showAddQuestionDialog() }
 

@@ -10,7 +10,6 @@ import com.arran.askaquestion.views.base.BasePresenter
  */
 class MainPresenter(private val firebaseRepository: IFirebaseRepository) : BasePresenter<MainContract.View>(), MainContract.Presenter {
 
-
     override fun attachView(mvpView: MainContract.View) {
         super.attachView(mvpView)
         firebaseRepository.attachListenerToChannelsDatabase()

@@ -12,6 +12,7 @@ import com.arran.askaquestion.views.question.QuestionsFragment
 import com.mikepenz.materialdrawer.Drawer
 import com.mikepenz.materialdrawer.DrawerBuilder
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem
+import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem
 import kotlinx.android.synthetic.main.activity_main.*
 import javax.inject.Inject
 
@@ -24,42 +25,52 @@ class MainActivity : BaseActivity(), MainContract.View {
 
     private lateinit var nawDrawer: Drawer
 
+    val drawerItemsMap = mutableMapOf<SecondaryDrawerItem, Channel?>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         AskAQuestion.presenterComponent.add(MainActivityModule()).inject(this)
         presenter.attachView(this)
-        refreshFragment()
+        refreshQuestionsFragment()
         setupNavigationDrawer(emptyList())
     }
 
     fun setupNavigationDrawer(channels: List<Channel>) {
+        drawerItemsMap.clear()
         val item1 = SecondaryDrawerItem().withIdentifier(0).withName(R.string.drawer_item_new_channel)
         val item2 = SecondaryDrawerItem().withIdentifier(1).withName(R.string.drawer_item_join_channel)
-        val drawerItems = mutableListOf<SecondaryDrawerItem>()
-        drawerItems.add(item1)
-        drawerItems.add(item2)
-        channels.forEachIndexed { index, (channelName) ->
-            val channelDrawerItem = SecondaryDrawerItem().withIdentifier((index + DEFAULT_DRAWER_ITEMS).toLong()).withName(channelName)
-            drawerItems.add(channelDrawerItem)
+        drawerItemsMap.put(item1, null)
+        drawerItemsMap.put(item2, null)
+        channels.forEachIndexed { index, channel ->
+            val channelDrawerItem = SecondaryDrawerItem().withIdentifier((index + DEFAULT_DRAWER_ITEMS).toLong()).withName(channel.channelName)
+            drawerItemsMap.put(channelDrawerItem, channel)
         }
         nawDrawer = DrawerBuilder()
                 .withActivity(this)
                 .withToolbar(main_toolbar)
                 .withOnDrawerItemClickListener { view, position, drawerItem ->
-                    when (drawerItem.identifier) {
-                        0L -> {
-                            showCreateChannelDialog()
-                        }
-                        1L -> {
-                            showJoinChannelDialog()
-                        }
-                    }
+                    onDrawerItemSelected(drawerItem)
                     true
                 }
                 .build()
 
-        drawerItems.forEach { nawDrawer.addItem(it) }
+        drawerItemsMap.forEach { secondaryDrawerItem, _ ->
+            nawDrawer.addItem(secondaryDrawerItem)
+        }
+    }
+
+    private fun onDrawerItemSelected(drawerItem: IDrawerItem<*, *>) {
+        when (drawerItem.identifier) {
+            0L -> showCreateChannelDialog()
+            1L -> showJoinChannelDialog()
+            else -> {
+                drawerItemsMap[drawerItem]?.let {
+                    refreshQuestionsFragment(it.firebaseKey)
+                } ?: showError()
+            }
+        }
+
     }
 
     private fun showCreateChannelDialog() {
@@ -76,7 +87,7 @@ class MainActivity : BaseActivity(), MainContract.View {
                 .show()
     }
 
-    private fun showJoinChannelDialog(){
+    private fun showJoinChannelDialog() {
         MaterialDialog.Builder(this)
                 .title(R.string.join_channel_dialog_title)
                 .customView(R.layout.dialog_channel_details, true)
@@ -90,9 +101,9 @@ class MainActivity : BaseActivity(), MainContract.View {
                 .show()
     }
 
-    private fun refreshFragment() {
+    private fun refreshQuestionsFragment(channelKey: String? = null) {
         val fragmentTransaction = supportFragmentManager.beginTransaction()
-        fragmentTransaction.replace(R.id.main_content, QuestionsFragment.newInstance())
+        fragmentTransaction.replace(R.id.main_content, QuestionsFragment.newInstance(channelKey))
         fragmentTransaction.commit()
     }
 
