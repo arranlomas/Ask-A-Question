@@ -1,4 +1,4 @@
-package com.arran.askaquestion.views.main.list
+package com.arran.askaquestion.views.question.list
 
 import android.support.v4.content.res.ResourcesCompat
 import android.support.v7.widget.RecyclerView

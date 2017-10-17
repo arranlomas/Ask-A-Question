@@ -1,6 +1,7 @@
 package com.arran.askaquestion.firebase
 
 import com.arran.askaquestion.AskAQuestion
+import com.arran.askaquestion.models.Channel
 import com.arran.askaquestion.models.Question
 import com.arran.askaquestion.utils.*
 import com.google.firebase.database.FirebaseDatabase
@@ -27,8 +28,8 @@ class FirebaseApi : IFirebaseApi {
         object AlreadyVoted : VoteResult()
     }
 
-    override fun postQuestion(question: String): Observable<String> {
-        return questionsRef.push().setValueObservable(Question(question, 1))
+    override fun postQuestion(question: String, channel: Channel): Observable<String> {
+        return questionsRef.push().setValueObservable(Question(question, 1, channel = channel))
                 .flatMap { addSelfToVotersList(it, it, true) }
                 .composeIo()
     }

@@ -1,5 +1,6 @@
 package com.arran.askaquestion.firebase
 
+import com.arran.askaquestion.models.Channel
 import com.arran.askaquestion.models.Question
 import com.arran.askaquestion.utils.composeIo
 import rx.Observable
@@ -29,8 +30,8 @@ class FirebaseRepository(val firebaseApi: IFirebaseApi): IFirebaseRepository {
         firebaseApi.listenToAllQuestionUbdates()
     }
 
-    override fun addNewQuestion(question: String): Observable<String> {
-        return firebaseApi.postQuestion(question)
+    override fun addNewQuestion(question: String, channel: Channel): Observable<String> {
+        return firebaseApi.postQuestion(question, channel)
                 .composeIo()
     }
 

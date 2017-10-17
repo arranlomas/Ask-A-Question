@@ -1,5 +1,6 @@
 package com.arran.askaquestion.firebase
 
+import com.arran.askaquestion.models.Channel
 import com.arran.askaquestion.models.Question
 import rx.Observable
 import rx.subjects.PublishSubject
@@ -9,7 +10,7 @@ import rx.subjects.PublishSubject
  */
 interface IFirebaseRepository {
     val questionUpdateObservable: PublishSubject<List<Question>>
-    fun addNewQuestion(question: String): Observable<String>
+    fun addNewQuestion(question: String, channel: Channel): Observable<String>
     fun attachListenerToQuestionsDatabase()
     fun voteUpQuestion(firebaseKey: String): Observable<FirebaseApi.VoteResult>
     fun voteDownQuestion(firebaseKey: String): Observable<FirebaseApi.VoteResult>

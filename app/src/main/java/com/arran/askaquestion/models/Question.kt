@@ -9,7 +9,8 @@ import com.google.firebase.database.Exclude
 data class Question(
         var questionText: String = "",
         var votes: Int = 0,
-        var voters: Map<String, Boolean> = mapOf()
+        var voters: Map<String, Boolean> = mapOf(),
+        var channel: Channel? = null
 ) : FirebaseObject(){
     enum class UserVoteState{
         UNVOTED,

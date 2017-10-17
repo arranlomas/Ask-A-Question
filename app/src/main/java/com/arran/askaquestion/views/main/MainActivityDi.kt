@@ -20,7 +20,7 @@ interface MainActivityComponent {
 @Module
 class MainActivityModule {
     @Provides
-    fun providesMainPresenter(firebaseRepository: IFirebaseRepository): MainContract.Presenter {
-        return MainPresenter(firebaseRepository)
+    fun providesMainPresenter(): MainContract.Presenter {
+        return MainPresenter()
     }
 }

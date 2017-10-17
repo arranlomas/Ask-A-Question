@@ -57,6 +57,11 @@ dependencies {
 
     //material dialog
     compile 'com.afollestad.material-dialogs:core:0.9.4.5'
+
+    //navigation drawer
+    compile('com.mikepenz:materialdrawer:5.9.5@aar') {
+        transitive = true
+    }
 }
 
 apply plugin: 'com.google.gms.google-services'
