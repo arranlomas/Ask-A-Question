@@ -27,7 +27,7 @@ class FirebaseRepository(val firebaseApi: IFirebaseApi): IFirebaseRepository {
         get() = firebaseApi.questionUpdateObservable
 
     override fun attachListenerToQuestionsDatabase() {
-        firebaseApi.listenToAllQuestionUbdates()
+        firebaseApi.listenToAllQuestionUpdates()
     }
 
     override fun addNewQuestion(question: String, channelKey: String): Observable<String> {
@@ -53,8 +53,16 @@ class FirebaseRepository(val firebaseApi: IFirebaseApi): IFirebaseRepository {
                 .composeIo()
     }
 
+    override val channelsUpdateObservable: PublishSubject<List<Channel>>
+        get() = firebaseApi.channelsUpdateObservable
+
     override fun createChannel(channelName: String, channelPassword: String): Observable<String> {
         return firebaseApi.createChannel(Channel(channelName, channelPassword))
+                .flatMap { firebaseApi.addSelfToChannel(it, it, true) }
                 .composeIo()
+    }
+
+    override fun attachListenerToChannelsDatabase() {
+        firebaseApi.listenToChannelUpdates()
     }
 }

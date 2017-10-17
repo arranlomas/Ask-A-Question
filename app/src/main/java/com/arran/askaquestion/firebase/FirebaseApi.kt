@@ -12,15 +12,21 @@ import rx.subjects.PublishSubject
  * Created by arran on 17/07/2017.
  */
 class FirebaseApi : IFirebaseApi {
+
+    //Questions
     private val KEY_QUESTIONS = "questions"
     private val KEY_VOTERS = "voters"
+
+    //Channels
     private val KEY_CHANNELS = "channels"
+    private val KEY_MEMBERS = "members"
 
     private val database = FirebaseDatabase.getInstance().reference
     private val questionsRef = database.child(KEY_QUESTIONS)
     private val channelsRef = database.child(KEY_CHANNELS)
 
     override val questionUpdateObservable: PublishSubject<List<Question>> = PublishSubject.create()
+    override val channelsUpdateObservable: PublishSubject<List<Channel>> = PublishSubject.create()
 
     sealed class VoteResult {
         object Success : VoteResult()
@@ -28,8 +34,8 @@ class FirebaseApi : IFirebaseApi {
         object AlreadyVoted : VoteResult()
     }
 
-    private fun <T>getNullAuthObservable(returnObject: T): Observable<T> {
-        return Observable.just(returnObject).doOnNext { throw IllegalStateException("User must be logged in") }
+    private fun <T> getNullAuthObservable(returnObject: T): Observable<T> {
+        return Observable.just(returnObject).map { throw IllegalStateException("User must be logged in") }
     }
 
     override fun postQuestion(question: String, channelKey: String): Observable<String> {
@@ -38,7 +44,7 @@ class FirebaseApi : IFirebaseApi {
                 .composeIo()
     }
 
-    override fun listenToAllQuestionUbdates() {
+    override fun listenToAllQuestionUpdates() {
         return questionsRef.attachPublishSubjectToEventList(Question::class.java, questionUpdateObservable)
     }
 
@@ -54,7 +60,7 @@ class FirebaseApi : IFirebaseApi {
         return postRef.createTransactionObservable(Question::class.java, transaction, VoteResult.Success, VoteResult.Failure)
     }
 
-    override fun <T>addSelfToVotersList(input: T, firebaseKey: String, voteUp: Boolean): Observable<T>{
+    override fun <T> addSelfToVotersList(input: T, firebaseKey: String, voteUp: Boolean): Observable<T> {
         AskAQuestion.currentUser?.uid?.let {
             return questionsRef.child(firebaseKey).child(KEY_VOTERS).child(it).setValueObservable(voteUp)
                     .map { input }
@@ -67,19 +73,36 @@ class FirebaseApi : IFirebaseApi {
                 if (!question.voters.containsKey(it)) {
                     action.invoke(question)
                     return@let true
-                }
-                else return@let false
+                } else return@let false
             } ?: false
         }
     }
 
     override fun retractVote(firebaseKey: String): Observable<Boolean> {
         AskAQuestion.currentUser?.uid?.let {
-           return questionsRef.child(firebaseKey).child(KEY_VOTERS).child(it).removeValueObservable()
+            return questionsRef.child(firebaseKey).child(KEY_VOTERS).child(it).removeValueObservable()
         } ?: return getNullAuthObservable(false)
     }
 
+
+    /**
+     * Channels
+     */
+    override fun listenToChannelUpdates() {
+        return channelsRef.attachPublishSubjectToEventListWithFilter(Channel::class.java, channelsUpdateObservable, {
+            channel ->
+            AskAQuestion.currentUser?.uid?.let { channel.members.containsKey(it) } ?: false
+        })
+    }
+
     override fun createChannel(channel: Channel): Observable<String> {
-       return channelsRef.push().setValueObservable(channel)
+        return channelsRef.push().setValueObservable(channel)
+    }
+
+    override fun <T> addSelfToChannel(input: T, firebaseKey: String, owner: Boolean): Observable<T> {
+        AskAQuestion.currentUser?.uid?.let {
+            return channelsRef.child(firebaseKey).child(KEY_MEMBERS).child(it).setValueObservable(owner)
+                    .map { input }
+        } ?: return getNullAuthObservable(input)
     }
 }

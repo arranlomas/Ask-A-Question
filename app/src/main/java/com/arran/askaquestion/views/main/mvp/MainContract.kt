@@ -1,5 +1,6 @@
 package com.arran.askaquestion.views.main.mvp
 
+import com.arran.askaquestion.models.Channel
 import com.arran.askaquestion.views.base.BaseContract
 
 /**
@@ -7,6 +8,7 @@ import com.arran.askaquestion.views.base.BaseContract
  */
 interface MainContract {
     interface View : BaseContract.MvpView {
+        fun updateChannels(channels: List<Channel>)
     }
 
     interface Presenter : BaseContract.Presenter<View> {

@@ -5,6 +5,7 @@ import android.widget.EditText
 import com.afollestad.materialdialogs.MaterialDialog
 import com.arran.askaquestion.AskAQuestion
 import com.arran.askaquestion.R
+import com.arran.askaquestion.models.Channel
 import com.arran.askaquestion.views.base.BaseActivity
 import com.arran.askaquestion.views.main.MainActivityModule
 import com.arran.askaquestion.views.question.QuestionsFragment
@@ -16,6 +17,7 @@ import javax.inject.Inject
 
 
 class MainActivity : BaseActivity(), MainContract.View {
+    private val DEFAULT_DRAWER_ITEMS = 2
 
     @Inject
     lateinit var presenter: MainContract.Presenter
@@ -28,19 +30,22 @@ class MainActivity : BaseActivity(), MainContract.View {
         AskAQuestion.presenterComponent.add(MainActivityModule()).inject(this)
         presenter.attachView(this)
         refreshFragment()
-        setupNavigationDrawer()
+        setupNavigationDrawer(emptyList())
     }
 
-    fun setupNavigationDrawer() {
+    fun setupNavigationDrawer(channels: List<Channel>) {
         val item1 = SecondaryDrawerItem().withIdentifier(0).withName(R.string.drawer_item_new_channel)
         val item2 = SecondaryDrawerItem().withIdentifier(1).withName(R.string.drawer_item_join_channel)
+        val drawerItems = mutableListOf<SecondaryDrawerItem>()
+        drawerItems.add(item1)
+        drawerItems.add(item2)
+        channels.forEachIndexed { index, (channelName) ->
+            val channelDrawerItem = SecondaryDrawerItem().withIdentifier((index + DEFAULT_DRAWER_ITEMS).toLong()).withName(channelName)
+            drawerItems.add(channelDrawerItem)
+        }
         nawDrawer = DrawerBuilder()
                 .withActivity(this)
                 .withToolbar(main_toolbar)
-                .addDrawerItems(
-                        item1,
-                        item2
-                )
                 .withOnDrawerItemClickListener { view, position, drawerItem ->
                     when (drawerItem.identifier) {
                         0L -> {
@@ -53,6 +58,8 @@ class MainActivity : BaseActivity(), MainContract.View {
                     true
                 }
                 .build()
+
+        drawerItems.forEach { nawDrawer.addItem(it) }
     }
 
     private fun showCreateChannelDialog() {
@@ -79,5 +86,9 @@ class MainActivity : BaseActivity(), MainContract.View {
     override fun onDestroy() {
         super.onDestroy()
         presenter.detachView()
+    }
+
+    override fun updateChannels(channels: List<Channel>) {
+        setupNavigationDrawer(channels)
     }
 }

@@ -15,5 +15,8 @@ interface IFirebaseRepository {
     fun voteUpQuestion(firebaseKey: String): Observable<FirebaseApi.VoteResult>
     fun voteDownQuestion(firebaseKey: String): Observable<FirebaseApi.VoteResult>
     fun retractVote(firebaseKey: String, userVoteState: Question.UserVoteState): Observable<Boolean>
+
+    val channelsUpdateObservable: PublishSubject<List<Channel>>
+    fun attachListenerToChannelsDatabase()
     fun createChannel(channelName: String, channelPassword: String): Observable<String>
 }

@@ -3,7 +3,6 @@ package com.arran.askaquestion.views.question
 import com.arran.askaquestion.R
 import com.arran.askaquestion.firebase.FirebaseApi
 import com.arran.askaquestion.firebase.IFirebaseRepository
-import com.arran.askaquestion.models.Channel
 import com.arran.askaquestion.models.Question
 import com.arran.askaquestion.views.base.BasePresenter
 import com.arran.askaquestion.views.question.list.QuestionsAdapter
