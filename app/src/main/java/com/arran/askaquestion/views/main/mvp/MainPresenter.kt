@@ -10,6 +10,7 @@ import com.arran.askaquestion.views.base.BasePresenter
  */
 class MainPresenter(private val firebaseRepository: IFirebaseRepository) : BasePresenter<MainContract.View>(), MainContract.Presenter {
 
+
     override fun attachView(mvpView: MainContract.View) {
         super.attachView(mvpView)
         firebaseRepository.attachListenerToChannelsDatabase()
@@ -26,6 +27,15 @@ class MainPresenter(private val firebaseRepository: IFirebaseRepository) : BaseP
                 .subscribe(object : BaseSubscriber<String>(){
                     override fun onNext(t: String?) {
                         mvpView.showSuccess(R.string.channel_create)
+                    }
+                })
+    }
+
+    override fun joinChannel(channelName: String, channelPassword: String) {
+        firebaseRepository.joinChannel(channelName, channelPassword)
+                .subscribe(object : BaseSubscriber<Channel>(){
+                    override fun onNext(channel: Channel) {
+                        mvpView.showSuccess(R.string.channel_joined)
                     }
                 })
     }

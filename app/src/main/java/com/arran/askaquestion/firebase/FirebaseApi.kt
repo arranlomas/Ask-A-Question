@@ -105,4 +105,14 @@ class FirebaseApi : IFirebaseApi {
                     .map { input }
         } ?: return getNullAuthObservable(input)
     }
+
+    sealed class JoingChannelResult {
+        object Success : JoingChannelResult()
+        object Failure : JoingChannelResult()
+        object IncorrectCredentials : JoingChannelResult()
+    }
+
+    override fun findChannel(channelName: String): Observable<List<Channel>> {
+        return channelsRef.orderByChild("channelName").equalTo(channelName).observeSingleEventList(Channel::class.java)
+    }
 }

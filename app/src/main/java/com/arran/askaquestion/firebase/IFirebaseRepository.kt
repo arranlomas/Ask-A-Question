@@ -19,4 +19,5 @@ interface IFirebaseRepository {
     val channelsUpdateObservable: PublishSubject<List<Channel>>
     fun attachListenerToChannelsDatabase()
     fun createChannel(channelName: String, channelPassword: String): Observable<String>
+    fun joinChannel(channelName: String, channelPassword: String): Observable<Channel>
 }

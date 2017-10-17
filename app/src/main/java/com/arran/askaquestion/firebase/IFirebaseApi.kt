@@ -22,5 +22,6 @@ interface IFirebaseApi {
     val channelsUpdateObservable: PublishSubject<List<Channel>>
     fun listenToChannelUpdates()
     fun createChannel(channel: Channel): Observable<String>
+    fun findChannel(channelName: String): Observable<List<Channel>>
     fun <T>addSelfToChannel(input: T, firebaseKey: String, owner: Boolean = false): Observable<T>
 }

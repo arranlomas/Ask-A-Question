@@ -52,7 +52,7 @@ class MainActivity : BaseActivity(), MainContract.View {
                             showCreateChannelDialog()
                         }
                         1L -> {
-
+                            showJoinChannelDialog()
                         }
                     }
                     true
@@ -65,7 +65,7 @@ class MainActivity : BaseActivity(), MainContract.View {
     private fun showCreateChannelDialog() {
         MaterialDialog.Builder(this)
                 .title(R.string.create_new_channel_dialog_title)
-                .customView(R.layout.dialog_create_new_channel, true)
+                .customView(R.layout.dialog_channel_details, true)
                 .positiveText(R.string.create_new_channel_dialog_positive)
                 .onPositive { dialog, _ ->
                     val channelName = dialog.customView?.findViewById<EditText>(R.id.channel_name_input)?.text?.toString()
@@ -74,7 +74,20 @@ class MainActivity : BaseActivity(), MainContract.View {
                     else showError()
                 }
                 .show()
+    }
 
+    private fun showJoinChannelDialog(){
+        MaterialDialog.Builder(this)
+                .title(R.string.join_channel_dialog_title)
+                .customView(R.layout.dialog_channel_details, true)
+                .positiveText(R.string.join_channel_dialog_positive)
+                .onPositive { dialog, _ ->
+                    val channelName = dialog.customView?.findViewById<EditText>(R.id.channel_name_input)?.text?.toString()
+                    val channelPassword = dialog.customView?.findViewById<EditText>(R.id.channel_password_input)?.text?.toString()
+                    if (channelName != null && channelPassword != null) presenter.joinChannel(channelName, channelPassword)
+                    else showError()
+                }
+                .show()
     }
 
     private fun refreshFragment() {

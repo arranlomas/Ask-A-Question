@@ -65,4 +65,11 @@ class FirebaseRepository(val firebaseApi: IFirebaseApi): IFirebaseRepository {
     override fun attachListenerToChannelsDatabase() {
         firebaseApi.listenToChannelUpdates()
     }
+
+    override fun joinChannel(channelName: String, channelPassword: String): Observable<Channel> {
+        return firebaseApi.findChannel(channelName)
+                .flatMapIterable { it }
+                .filter { it.channelPassword == channelPassword }
+                .flatMap { firebaseApi.addSelfToChannel(it, it.firebaseKey, false) }
+    }
 }

@@ -100,3 +100,44 @@ fun <T> DatabaseReference.transactAsync(clazz: Class<T>, action: (T) -> Boolean,
         }
     })
 }
+
+fun <T> Query.observeSingleEventList(clazz: Class<T>): Observable<List<T>> {
+    return Observable.create<List<T>>({
+        this.addListenerForSingleValueEvent(getEventListenerList(onError = { error ->
+            it.onError(error)
+        }, onDataChange = { list ->
+            it.onNext(list)
+        }, clazz = clazz))
+    }, Emitter.BackpressureMode.BUFFER)
+            .observeOn(Schedulers.computation())
+}
+
+
+fun <T> Query.observeSingleEvent(clazz: Class<T>): Observable<T> {
+    return Observable.create<T>({
+        this.addListenerForSingleValueEvent(getEventListener(onError = { error ->
+            it.onError(error)
+        }, onDataChange = { item ->
+            it.onNext(item)
+        }, clazz = clazz))
+    }, Emitter.BackpressureMode.BUFFER)
+            .observeOn(Schedulers.computation())
+}
+
+fun <T> getEventListener(onError: (Exception) -> Unit, onDataChange: (T) -> Unit, clazz: Class<T>): ValueEventListener {
+    return object : ValueEventListener {
+        override fun onCancelled(databaseError: DatabaseError) {
+            Log.v("ERROR", "onCancelled", databaseError.toException())
+            onError.invoke(kotlin.IllegalStateException("No values found or request cancelled"))
+        }
+
+        override fun onDataChange(dataSnapshot: DataSnapshot) {
+            val firebaseKey = dataSnapshot.key
+            dataSnapshot.getValue(clazz)?.let {
+                (it as FirebaseObject).firebaseKey = firebaseKey
+                onDataChange.invoke(it)
+            }
+        }
+    }
+}
+
