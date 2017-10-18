@@ -24,8 +24,8 @@ Screenshots:
 
 ![Add question dialog](https://github.com/arranlomas/Ask-A-Question/blob/master/screenshots/ask-a-question-screenshot-a.png)
 
-![Channel Drawer](https://github.com/arranlomas/Ask-A-Question/blob/master/screenshots/ask-a-question-screenshot-c.png)
+![Channel Drawer](https://github.com/arranlomas/Ask-A-Question/blob/master/screenshots/ask-a-question-screenshot-c.jpg)
 
-![Add channel dialog](https://github.com/arranlomas/Ask-A-Question/blob/master/screenshots/ask-a-question-screenshot-d.png)
+![Add channel dialog](https://github.com/arranlomas/Ask-A-Question/blob/master/screenshots/ask-a-question-screenshot-d.jpg)
 
-![Join channel dialog](https://github.com/arranlomas/Ask-A-Question/blob/master/screenshots/ask-a-question-screenshot-e.png)
+![Join channel dialog](https://github.com/arranlomas/Ask-A-Question/blob/master/screenshots/ask-a-question-screenshot-e.jpg)
