@@ -61,6 +61,7 @@ class MainActivity : BaseActivity(), MainContract.View {
     }
 
     private fun onDrawerItemSelected(drawerItem: IDrawerItem<*, *>) {
+        nawDrawer.closeDrawer()
         when (drawerItem.identifier) {
             0L -> showCreateChannelDialog()
             1L -> showJoinChannelDialog()
@@ -113,6 +114,7 @@ class MainActivity : BaseActivity(), MainContract.View {
     }
 
     override fun updateChannels(channels: List<Channel>) {
+        nawDrawer.closeDrawer()
         setupNavigationDrawer(channels)
     }
 }
