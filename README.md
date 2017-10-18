@@ -6,8 +6,8 @@ Press the add button, type your question and press send
 You and other users of the app can vote on the questions (one vote per question per device)
 
 The latest apk can be downloaded from this link: 
-
-https://github.com/arranlomas/Ask-A-Question/raw/master/release-apk/1.0.0.apk
+![1.0.0](https://github.com/arranlomas/Ask-A-Question/raw/master/release-apk/1.0.0.apk)
+![1.0.1](https://github.com/arranlomas/Ask-A-Question/raw/master/release-apk/1.0.1.apk)
 
 
 To install you must go to:
