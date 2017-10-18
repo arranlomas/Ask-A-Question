@@ -43,6 +43,15 @@ fun <T> DatabaseReference.attachPublishSubjectToEventList(clazz: Class<T>, publi
     }, clazz = clazz))
 }
 
+fun <T> Query.attachPublishSubjectToEventList(clazz: Class<T>, publishSubject: PublishSubject<List<T>>) {
+    this.addValueEventListener(getEventListenerList(onError = {
+        publishSubject.onError(IllegalStateException("value event listener cancelled ${it.message}"))
+        Log.v("ERROR", "loadCloudItems: onCancelled", it)
+    }, onDataChange = {
+        publishSubject.onNext(it)
+    }, clazz = clazz))
+}
+
 fun <T> DatabaseReference.attachPublishSubjectToEventListWithFilter(clazz: Class<T>, publishSubject: PublishSubject<List<T>>, predicate: (T) -> Boolean) {
     this.addValueEventListener(getEventListenerList(onError = {
         publishSubject.onError(IllegalStateException("value event listener cancelled ${it.message}"))

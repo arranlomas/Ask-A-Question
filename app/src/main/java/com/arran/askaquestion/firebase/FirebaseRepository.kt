@@ -11,6 +11,10 @@ import rx.subjects.PublishSubject
  */
 class FirebaseRepository(val firebaseApi: IFirebaseApi): IFirebaseRepository {
 
+    override fun subscribeToQuestionUpdates(firebaseChannelKey: String): PublishSubject<List<Question>> {
+        return firebaseApi.subscribeToQuestionUpdates(firebaseChannelKey)
+    }
+
     override fun voteUpQuestion(firebaseKey: String): Observable<FirebaseApi.VoteResult> {
         return firebaseApi.incrementQuestionVoteCount(firebaseKey)
                 .flatMap { firebaseApi.addSelfToVotersList(it, firebaseKey, true) }
@@ -21,13 +25,6 @@ class FirebaseRepository(val firebaseApi: IFirebaseApi): IFirebaseRepository {
         return firebaseApi.decreaseQuestionVoteCount(firebaseKey)
                 .flatMap { firebaseApi.addSelfToVotersList(it, firebaseKey, false) }
                 .composeIo()
-    }
-
-    override val questionUpdateObservable: PublishSubject<List<Question>>
-        get() = firebaseApi.questionUpdateObservable
-
-    override fun attachListenerToQuestionsDatabase() {
-        firebaseApi.listenToAllQuestionUpdates()
     }
 
     override fun addNewQuestion(question: String, channelKey: String): Observable<String> {
@@ -71,5 +68,10 @@ class FirebaseRepository(val firebaseApi: IFirebaseApi): IFirebaseRepository {
                 .flatMapIterable { it }
                 .filter { it.channelPassword == channelPassword }
                 .flatMap { firebaseApi.addSelfToChannel(it, it.firebaseKey, false) }
+    }
+
+    override fun findQuestionsForChannel(channelKey: String): Observable<List<Question>> {
+        return firebaseApi.findQuestionsForChannel(channelKey)
+                .composeIo()
     }
 }

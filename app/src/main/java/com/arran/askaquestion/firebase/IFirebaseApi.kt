@@ -10,13 +10,12 @@ import rx.subjects.PublishSubject
  */
 interface IFirebaseApi {
     //questions
-    val questionUpdateObservable: PublishSubject<List<Question>>
     fun postQuestion(question: String, channelKey: String): Observable<String>
-    fun listenToAllQuestionUpdates()
     fun incrementQuestionVoteCount(firebaseKey: String): Observable<FirebaseApi.VoteResult>
     fun decreaseQuestionVoteCount(firebaseKey: String): Observable<FirebaseApi.VoteResult>
     fun retractVote(firebaseKey: String): Observable<Boolean>
     fun <T> addSelfToVotersList(input: T, firebaseKey: String, voteUp: Boolean): Observable<T>
+    fun subscribeToQuestionUpdates(firebaseChannelKey: String): PublishSubject<List<Question>>
 
     //channels
     val channelsUpdateObservable: PublishSubject<List<Channel>>
@@ -24,4 +23,5 @@ interface IFirebaseApi {
     fun createChannel(channel: Channel): Observable<String>
     fun findChannel(channelName: String): Observable<List<Channel>>
     fun <T>addSelfToChannel(input: T, firebaseKey: String, owner: Boolean = false): Observable<T>
+    fun findQuestionsForChannel(channelKey: String): Observable<List<Question>>
 }

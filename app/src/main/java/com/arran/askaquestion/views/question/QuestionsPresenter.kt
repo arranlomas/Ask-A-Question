@@ -12,10 +12,13 @@ import rx.Subscriber
  * Created by arran on 11/07/2017.
  */
 class QuestionsPresenter(val firebaseRepository: IFirebaseRepository) : BasePresenter<QuestionsContract.View>(), QuestionsContract.Presenter {
+    private lateinit var channelKey: String
+
 
     override fun reload(channelKey: String?) {
-        firebaseRepository.attachListenerToQuestionsDatabase()
-        firebaseRepository.questionUpdateObservable
+        channelKey?.let { this.channelKey = it }
+        if (channelKey == null) return
+        firebaseRepository.subscribeToQuestionUpdates(channelKey)
                 .subscribe(object : BaseSubscriber<List<Question>>() {
                     override fun onNext(questions: List<Question>) {
                         mvpView.showQuestions(questions.sortedByDescending { it.votes })
@@ -24,7 +27,7 @@ class QuestionsPresenter(val firebaseRepository: IFirebaseRepository) : BasePres
     }
 
     override fun sendNewQuestion(text: String) {
-        firebaseRepository.addNewQuestion(text, "test")
+        firebaseRepository.addNewQuestion(text, channelKey)
                 .subscribe(object : BaseSubscriber<String>() {
                     override fun onNext(firebaseKey: String) {
                         mvpView.showSuccess(R.string.send_question_success)

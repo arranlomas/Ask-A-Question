@@ -12,6 +12,11 @@ import rx.subjects.PublishSubject
  * Created by arran on 17/07/2017.
  */
 class FirebaseApi : IFirebaseApi {
+    override fun subscribeToQuestionUpdates(firebaseChannelKey: String): PublishSubject<List<Question>> {
+        val publishSubject: PublishSubject<List<Question>> = PublishSubject.create()
+        questionsRef.orderByChild("channelKey").equalTo(firebaseChannelKey).attachPublishSubjectToEventList(Question::class.java, publishSubject)
+        return publishSubject
+    }
 
     //Questions
     private val KEY_QUESTIONS = "questions"
@@ -25,7 +30,6 @@ class FirebaseApi : IFirebaseApi {
     private val questionsRef = database.child(KEY_QUESTIONS)
     private val channelsRef = database.child(KEY_CHANNELS)
 
-    override val questionUpdateObservable: PublishSubject<List<Question>> = PublishSubject.create()
     override val channelsUpdateObservable: PublishSubject<List<Channel>> = PublishSubject.create()
 
     sealed class VoteResult {
@@ -42,10 +46,6 @@ class FirebaseApi : IFirebaseApi {
         return questionsRef.push().setValueObservable(Question(question, 1, channelKey = channelKey))
                 .flatMap { addSelfToVotersList(it, it, true) }
                 .composeIo()
-    }
-
-    override fun listenToAllQuestionUpdates() {
-        return questionsRef.attachPublishSubjectToEventList(Question::class.java, questionUpdateObservable)
     }
 
     override fun decreaseQuestionVoteCount(firebaseKey: String): Observable<VoteResult> {
@@ -114,5 +114,9 @@ class FirebaseApi : IFirebaseApi {
 
     override fun findChannel(channelName: String): Observable<List<Channel>> {
         return channelsRef.orderByChild("channelName").equalTo(channelName).observeSingleEventList(Channel::class.java)
+    }
+
+    override fun findQuestionsForChannel(channelKey: String): Observable<List<Question>> {
+        return questionsRef.orderByChild("channelKey").equalTo(channelKey).observeSingleEventList(Question::class.java)
     }
 }
