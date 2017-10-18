@@ -5,7 +5,7 @@ App to send a question
 
 2) Press the add button, type your question and press send
 
-Y3) ou and other users of the app can vote on the questions (one vote per question per device)
+3) ou and other users of the app can vote on the questions (one vote per question per device)
 
 Apk's can be downloaded from the following links:
 
