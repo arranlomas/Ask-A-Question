@@ -12,8 +12,7 @@ import rx.Subscriber
  * Created by arran on 11/07/2017.
  */
 class QuestionsPresenter(val firebaseRepository: IFirebaseRepository) : BasePresenter<QuestionsContract.View>(), QuestionsContract.Presenter {
-    private lateinit var channelKey: String
-
+    private var channelKey: String? = null
 
     override fun reload(channelKey: String?) {
         channelKey?.let { this.channelKey = it }
@@ -27,12 +26,14 @@ class QuestionsPresenter(val firebaseRepository: IFirebaseRepository) : BasePres
     }
 
     override fun sendNewQuestion(text: String) {
-        firebaseRepository.addNewQuestion(text, channelKey)
-                .subscribe(object : BaseSubscriber<String>() {
-                    override fun onNext(firebaseKey: String) {
-                        mvpView.showSuccess(R.string.send_question_success)
-                    }
-                })
+        channelKey?.let {
+            firebaseRepository.addNewQuestion(text, it)
+                    .subscribe(object : BaseSubscriber<String>() {
+                        override fun onNext(firebaseKey: String) {
+                            mvpView.showSuccess(R.string.send_question_success)
+                        }
+                    })
+        } ?: mvpView.showError(R.string.error_not_in_channel)
     }
 
     override fun onListItemAction(question: Question, action: QuestionsAdapter.ACTION) {

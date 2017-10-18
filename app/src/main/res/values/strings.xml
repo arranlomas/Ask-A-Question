@@ -4,6 +4,7 @@
     <!--Errors-->
     <string name="unexpected_error">Unexpected Error</string>
     <string name="error_already_voted">Error, You have already voted</string>
+    <string name="error_not_in_channel">Error, You must be in a channel to post a question</string>
 
 
     <!--add new question dialog-->
