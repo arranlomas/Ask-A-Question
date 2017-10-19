@@ -9,11 +9,6 @@ App to send a question
 
 Apk's can be downloaded from the following links:
 
-![1.0.0](https://github.com/arranlomas/Ask-A-Question/raw/master/release-apk/1.0.0.apk)
-
-![1.0.1](https://github.com/arranlomas/Ask-A-Question/raw/master/release-apk/1.0.1.apk)
-
-
 To install you must go to:
 settings -> security -> check Unknown sources (also recommend you check Verify apps) -> open the apk and follow hints to install
 
