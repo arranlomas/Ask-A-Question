@@ -9,11 +9,14 @@ App to send a question
 
 Apk's can be downloaded from the following links:
 
+To use the app you have to generate the apk
+clone the repo
+go to firebase create an android app in firebase, enable realtime database, enable auth, enable annonymous auth, download the json configuration put in the app under /app/ directory
+
 To install you must go to:
 settings -> security -> check Unknown sources (also recommend you check Verify apps) -> open the apk and follow hints to install
 
-
-DO NOT PUT PRIVATE INFORMATION ON THE APP - the app is not secure
+The app is secured by you using your own firebase configuration, this means no other instances of the app can access it, channels can be created and removed, if someone you dont want to see your questions still has the app, simply create a new channel with a new password and they cannot see the questions in this new channel
 
 
 Screenshots:
